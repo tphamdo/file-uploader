@@ -6,8 +6,6 @@ import * as controller from '../controllers/controller';
 const router = express.Router();
 
 router.get('/', (req: Request, res: Response) => {
-  log('YYYYYYYYYYOOOOOOOOOOOOOOOOOOOOOOOO');
-  log(req.user?.username);
   res.render('index', {
     username: req.user?.username,
   });
@@ -24,4 +22,5 @@ router.get('/register', (_req: Request, res: Response) => {
 
 router.post('/register', controller.registerPost);
 
+router.get('/logout', controller.logoutGet);
 export default router;

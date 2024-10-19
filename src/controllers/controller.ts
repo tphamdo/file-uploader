@@ -28,8 +28,17 @@ export async function loginPost(req: Request, res: Response) {
         return res.redirect('/login');
       }
 
+      console.log(user);
       // temporary check --> move to use sessions
-      return res.redirect(`/users/${user.username}`);
+      req.login(user, () => {
+        res.redirect('/');
+      });
     },
   )(req, res);
+}
+
+export async function logoutGet(req: Request, res: Response) {
+  req.logout(() => {
+    res.redirect('/');
+  });
 }

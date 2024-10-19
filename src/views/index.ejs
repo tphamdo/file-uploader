@@ -5,7 +5,12 @@
   <title>File Uploader</title>
 </head>
 <body>
-  <a href="/login">Login</a>
-  <a href="/register">Sign Up</a>
+  <% if (locals.username) { %>
+    <h1>Hi <%= username %></h1>
+    <a href="/logout">Logout</a>
+  <% } else { %>
+    <a href="/login">Login</a>
+    <a href="/register">Sign Up</a>
+  <% } %>
 </body>
 </html>

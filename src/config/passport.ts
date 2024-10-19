@@ -3,6 +3,7 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import log from '../lib/logger';
 import * as db from '../db/queries';
 import { validPassword } from '../lib/password';
+import { User } from '@prisma/client';
 
 passport.use(
   new LocalStrategy(async function verify(
@@ -26,3 +27,15 @@ passport.use(
     return done(null, user);
   }),
 );
+
+passport.serializeUser((user: Express.User, cb: Function) => {
+  log('serializeUser');
+  log('user:', user);
+  return cb(null, { id: user.id, username: user.username });
+});
+
+passport.deserializeUser((user: Object, cb: Function) => {
+  log('deserializeUser');
+  log('user:', user);
+  cb(null, user);
+});
