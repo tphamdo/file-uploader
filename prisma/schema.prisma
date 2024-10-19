@@ -23,10 +23,34 @@ model Session {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique @db.VarChar(16)
-  password String @db.VarChar(128)
-  salt     String @db.VarChar(64)
+  id       Int      @id @default(autoincrement())
+  username String   @unique @db.VarChar(16)
+  password String   @db.VarChar(128)
+  salt     String   @db.VarChar(64)
+  folders  Folder[]
 
   @@map("users")
+}
+
+model Folder {
+  id             Int      @id @default(autoincrement())
+  isRoot         Boolean  @default(false)
+  parentFolderId Int?
+  parentFolder   Folder?  @relation("FolderHierachy", fields: [parentFolderId], references: [id], onDelete: Cascade)
+  childFolders   Folder[] @relation("FolderHierachy")
+  files          File[]
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId        Int
+  name           String
+
+  @@map("folders")
+}
+
+model File {
+  id       Int    @id @default(autoincrement())
+  Folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId Int
+  name     String
+
+  @@map("files")
 }

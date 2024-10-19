@@ -12,6 +12,14 @@ export async function addUser(
       username,
       password: hash,
       salt,
+      folders: {
+        create: [
+          {
+            isRoot: true,
+            name: 'root'
+          }
+        ]
+      },
     },
   });
 
