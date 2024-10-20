@@ -17,10 +17,17 @@
       <input type="file" id="document" name="document" accept=".txt, .docx, .pdf, .jpg, .jpeg, .png" />
       <input type="submit" value="Submit">
     </form>
-    <% } else { %>
-      <a href="/login">Login</a>
-      <a href="/register">Sign Up</a>
+  <% } else { %>
+    <a href="/login">Login</a>
+    <a href="/register">Sign Up</a>
+  <% } %>
+  <div class="files">
+    <% if (locals.files) { %>
+      <% files.map(file => {%>
+        <p><%= file.name %></p>
+      <% }) %>
     <% } %>
+  </div>
 </body>
 
 </html>

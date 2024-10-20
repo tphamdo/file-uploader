@@ -1,6 +1,6 @@
 import prisma from '../prisma/client';
 import { genPassword } from '../lib/password';
-import { User } from '@prisma/client';
+import { User, File } from '@prisma/client';
 
 export async function addUser(
   username: string,
@@ -15,8 +15,8 @@ export async function addUser(
       folders: {
         create: [
           {
+            name: 'root',
             isRoot: true,
-            name: 'root'
           }
         ]
       },
@@ -34,4 +34,42 @@ export async function getUser(username: string): Promise<User | null> {
   });
 
   return user;
+}
+
+export async function addFile(filename: string, folderId: number): Promise<File | null> {
+  const file = await prisma.file.create({
+    data: {
+      folderId,
+      name: filename,
+    }
+  });
+
+  return file;
+}
+
+export async function getRootFolderId(userId: number): Promise<number | null> {
+  const rootFolder = await prisma.folder.findFirst({
+    where: {
+      isRoot: true,
+      ownerId: userId,
+    },
+    select: {
+      id: true,
+    }
+  });
+
+  return rootFolder?.id ?? null
+}
+
+export async function getRootFiles(userId: number): Promise<File[] | null> {
+  const rootFolderId = await getRootFolderId(userId);
+  if (!rootFolderId) return null;
+
+  const rootFiles = await prisma.file.findMany({
+    where: {
+      folderId: rootFolderId
+    }
+  });
+
+  return rootFiles;
 }

@@ -43,12 +43,13 @@ model Folder {
   ownerId        Int
   name           String
 
+  @@unique([isRoot, ownerId])
   @@map("folders")
 }
 
 model File {
   id       Int    @id @default(autoincrement())
-  Folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId Int
   name     String
 
