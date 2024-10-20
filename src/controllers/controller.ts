@@ -4,6 +4,8 @@ import log from '../lib/logger';
 import passport from 'passport';
 import upload from '../lib/upload';
 import multer from 'multer';
+import fs from 'fs';
+import path from 'path'
 
 export async function indexGet(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.render('index');
@@ -40,7 +42,7 @@ export async function loginPost(req: Request, res: Response) {
         return res.redirect('/login');
       }
 
-      console.log(user);
+      log(user);
       // temporary check --> move to use sessions
       req.login(user, () => {
         res.redirect('/');
@@ -59,28 +61,40 @@ export async function logoutGet(req: Request, res: Response) {
 export async function uploadPost(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.redirect('/');
 
+  try {
+    log("rqf:", req.file);
+    log("rqb:", req.body);
+
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
   upload.single('document')(req, res, async (err) => {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      res.send(`File ${req.file?.originalname} upload failed (multer).`);
+      return res.send(`File ${req.file?.originalname} upload failed (multer).`);
     } else if (err) {
       // An unknown error occurred when uploading.
-      res.send(`File ${req.file?.originalname} upload failed (unknown).`);
+      return res.send(`File ${req.file?.originalname} upload failed (unknown).`);
+    } else if (!req.file) {
+      return res.send(`Req.file does not exist`);
     }
+    log("rqf:", req.file);
+    log("rqb:", req.body);
 
-    try {
-      if (!req.file) throw new Error("No file found in request");
+    const rootFolderId = await db.getRootFolderId(req.user.id);
 
-      const rootFolderId = await db.getRootFolderId(req.user.id);
+    if (!rootFolderId) throw new Error("Root folder for user does not exist");
 
-      if (!rootFolderId) throw new Error("Root folder for user does not exist");
+    const file = await db.addFile(req.file.filename, rootFolderId);
 
-      const file = await db.addFile(req.file.filename, rootFolderId);
-      log(file);
-    } catch (err) {
-      console.error(err);
-      res.redirect('/');
-    }
-    res.send(`File ${req.file?.originalname} uploaded successfully.`);
+    if (!file) throw new Error("Could not add the file to the db");
+    log(file);
+
+    fs.rename(req.file.path, path.join(req.file.destination, file.id.toString()), (err) => {
+      log(err);
+    });
+
+    res.send(`File ${req.file.filename} uploaded successfully.`);
   });
 }

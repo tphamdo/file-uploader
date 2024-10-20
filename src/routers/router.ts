@@ -2,6 +2,7 @@ import express from 'express';
 import { Request, Response } from 'express';
 import log from '../lib/logger';
 import * as controller from '../controllers/controller';
+import upload from '../lib/upload';
 
 const router = express.Router();
 
