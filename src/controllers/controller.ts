@@ -66,7 +66,6 @@ export async function uploadPost(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.render('home');
 
   let originalUrl = req.originalUrl.slice(0, -6); // remove '/upload'
-  log('originalUrl:', originalUrl);
 
   upload.single('document')(req, res, async (err) => {
     if (err) {
@@ -74,21 +73,28 @@ export async function uploadPost(req: Request, res: Response) {
         req.flash('uploadError', 'File size too large');
         return res.redirect(originalUrl);
       } else {
+        req.flash('uploadError', `Something went wrong`);
         return res.redirect(originalUrl);
       }
     } else {
       if (!req.file) {
-        return res.send(`Req.file does not exist`);
+        req.flash('uploadError', `Something went wrong`);
+        return res.redirect(originalUrl);
       }
 
-      log('folderId?: ', req.params.folderId);
       let folderId = req.params.folderId ? +req.params.folderId : null;
 
       if (!folderId) folderId = await db.getRootFolderId(req.user.id);
-      if (!folderId) throw new Error('Folder does not exist');
+      if (!folderId) {
+        req.flash('uploadError', `Something went wrong`);
+        return res.redirect(originalUrl);
+      }
 
       const file = await db.addFile(req.file.filename, folderId);
-      if (!file) throw new Error('Could not add the file to the db');
+      if (!file) {
+        req.flash('uploadError', `Something went wrong`);
+        return res.redirect(originalUrl);
+      }
 
       // rename file to its id in the database
       fs.rename(req.file.path, path.join(req.file.destination, file.id.toString()), (err) => {
@@ -103,13 +109,22 @@ export async function uploadPost(req: Request, res: Response) {
 export async function folderPost(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.render('home');
 
-  const rootFolderId = await db.getRootFolderId(req.user.id);
-  if (!rootFolderId) throw new Error('Root folder for user does not exist');
+  let originalUrl = req.originalUrl.slice(0, -6); // remove '/folder'
 
-  const folder = await db.addFolder(req.body.folderName, rootFolderId, req.user.id);
-  if (!folder) throw new Error('Could not add the folder to the db');
+  let folderId = req.params.folderId ? +req.params.folderId : null;
+  if (!folderId) folderId = await db.getRootFolderId(req.user.id);
+  if (!folderId) {
+    req.flash('folderError', `Something went wrong`);
+    return res.redirect(originalUrl);
+  }
 
-  res.redirect('/');
+  const folder = await db.addFolder(req.body.folderName, folderId, req.user.id);
+  if (!folder) {
+    req.flash('folderError', `Something went wrong`);
+    return res.redirect(originalUrl);
+  }
+
+  res.redirect(originalUrl);
 }
 
 

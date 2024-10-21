@@ -21,6 +21,9 @@
       <input type="file" id="document" name="document" accept=".txt, .docx, .pdf, .jpg, .jpeg, .png" />
       <input type="submit" value="Submit">
     </form>
+    <% if (locals.messages.folderError) { %>
+      <p class="flashErrorMessage"><%= messages.folderError %></p>
+    <% } %>
     <form action="<%= locals.postPath? postPath : '' %>/folder" method="post">
       <label for="folderName">Create a folder:</label>
       <input type="text" id="folderName" name="folderName">
@@ -42,7 +45,7 @@
     <h4>Folders</h4>
     <% if (locals.folders) { %>
       <% folders.map(folder => {%>
-        <a href="folders/<%=folder.id%>"><p><%= folder.name %></p></a>
+        <a href="/folders/<%=folder.id%>"><p><%= folder.name %></p></a>
       <% }) %>
     <% } %>
   </div>
