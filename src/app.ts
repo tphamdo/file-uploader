@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import path from 'path';
 import router from './routers/router';
+import folderRouter from './routers/folderRouter';
 import log from './lib/logger';
 import session from 'express-session';
 import passport from 'passport';
@@ -37,10 +38,11 @@ app.use(passport.session());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use('/', router);
+app.use('/folders', folderRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

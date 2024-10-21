@@ -1,0 +1,11 @@
+* {
+  margin: 0;
+}
+
+#uploadErrorMessage {
+  animation: hideAnimation 0s 5s forwards;
+}
+
+@keyframes hideAnimation {
+  to   { display: none; }
+}

@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
   }
 });
 
-let maxUploadSizeBytes = process.env.MAX_UPLOAD_SIZE_BYTES || 20000;
+let maxUploadSizeBytes = process.env.MAX_UPLOAD_SIZE_BYTES || 5000000; // 5MB
 
 const upload = multer({ storage: storage, limits: { fileSize: +maxUploadSizeBytes } })
 

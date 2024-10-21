@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>File Uploader</title>
+  <link rel="stylesheet" type="text/css" href="/css/styles.css" />
 </head>
 
 <body>
@@ -12,19 +13,33 @@
     </h1>
     <a href="/logout">Logout</a>
     <hr />
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <% if (locals.error) { %>
+      <p id="uploadErrorMessage"><%= error %></p>
+    <% } %>
+    <form action="<%= locals.postPath? postPath : '' %>/upload" method="post" enctype="multipart/form-data">
       <label for="document">Upload a file:</label>
       <input type="file" id="document" name="document" accept=".txt, .docx, .pdf, .jpg, .jpeg, .png" />
       <input type="submit" value="Submit">
     </form>
-  <% } else { %>
-    <a href="/login">Login</a>
-    <a href="/register">Sign Up</a>
+    <form action="<%= locals.postPath? postPath : '' %>/folder" method="post">
+      <label for="folderName">Create a folder:</label>
+      <input type="text" id="folderName" name="folderName">
+      <input type="submit" value="Submit">
+    </form>
   <% } %>
+  <div class="folders">
+    <hr />
+    <% if (locals.folders) { %>
+      <% folders.map(folder => {%>
+        <a href="folders/<%=folder.id%>"><p><%= folder.name %></p></a>
+      <% }) %>
+    <% } %>
+  </div>
   <div class="files">
+    <hr />
     <% if (locals.files) { %>
       <% files.map(file => {%>
-        <p><%= file.name %></p>
+        <p onclick="alert('File id is <%= file.id %>')"><%= file.name %></p>
       <% }) %>
     <% } %>
   </div>

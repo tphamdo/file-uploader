@@ -43,7 +43,6 @@ model Folder {
   ownerId        Int
   name           String
 
-  @@unique([isRoot, ownerId])
   @@map("folders")
 }
 

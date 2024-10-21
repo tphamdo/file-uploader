@@ -1,8 +1,6 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import log from '../lib/logger';
 import * as controller from '../controllers/controller';
-import upload from '../lib/upload';
 
 const router = express.Router();
 
@@ -20,5 +18,6 @@ router.post('/register', controller.registerPost);
 
 router.get('/logout', controller.logoutGet);
 router.post('/upload', controller.uploadPost);
+router.post('/folder', controller.folderPost);
 
 export default router;
