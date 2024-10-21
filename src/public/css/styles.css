@@ -2,7 +2,7 @@
   margin: 0;
 }
 
-#uploadErrorMessage {
+.flashErrorMessage {
   animation: hideAnimation 0s 3s forwards;
 }
 

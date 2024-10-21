@@ -14,7 +14,7 @@
     <a href="/logout">Logout</a>
     <hr />
     <% if (locals.messages.uploadError) { %>
-      <p id="uploadErrorMessage"><%= messages.uploadError %></p>
+      <p class="flashErrorMessage"><%= messages.uploadError %></p>
     <% } %>
     <form action="<%= locals.postPath? postPath : '' %>/upload" method="post" enctype="multipart/form-data">
       <label for="document">Upload a file:</label>
@@ -27,8 +27,19 @@
       <input type="submit" value="Submit">
     </form>
   <% } %>
+  <div class="folderPath">
+    <% if (locals.folderPath) { %>
+      <% folderPath.map((folder, idx) => { %>
+        <% if (idx !==0 ) { %>
+          <span>&gt;</span>
+        <% } %>
+        <a href="<%= folder.isRoot? '/' : `/folders/${folder.id}` %>"><span><%= folder.name %></span></a>
+      <% }) %>
+    <% } %>
+  </div>
   <div class="folders">
     <hr />
+    <h4>Folders</h4>
     <% if (locals.folders) { %>
       <% folders.map(folder => {%>
         <a href="folders/<%=folder.id%>"><p><%= folder.name %></p></a>
@@ -37,6 +48,7 @@
   </div>
   <div class="files">
     <hr />
+    <h4>Files</h4>
     <% if (locals.files) { %>
       <% files.map(file => {%>
         <p onclick="alert('File id is <%= file.id %>')"><%= file.name %></p>

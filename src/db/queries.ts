@@ -123,3 +123,20 @@ export async function getFolderFolders(folderId: number): Promise<Folder[] | nul
 
   return files;
 }
+
+export async function getRootFolderPath(userId: number): Promise<Folder[] | null> {
+  const rootFolderId = await getRootFolderId(userId);
+  if (!rootFolderId) return null;
+
+  return getFolderPath(rootFolderId);
+}
+
+export async function getFolderPath(folderId: number): Promise<Folder[] | null> {
+  const folder = await getFolder(folderId);
+  if (!folder) return null;
+  if (folder.isRoot || !folder.parentFolderId) return [folder];
+
+  const folderPath = await getFolderPath(folder.parentFolderId);
+  if (!folderPath) return null;
+  return [...folderPath, folder];
+}
