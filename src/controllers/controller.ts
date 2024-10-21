@@ -161,3 +161,21 @@ export async function folderDelete(req: Request, res: Response) {
   log(folder.parentFolderId);
   res.redirect(`/folders/${folder.parentFolderId}`);
 }
+
+export async function fileDelete(req: Request, res: Response) {
+  log("HEEEEEEEEEEERE");
+  if (!req.isAuthenticated()) return res.redirect('/');
+
+  log("HEEEEEEEEEEERE");
+  if (!isIntegerString(req.params.fileId)) return res.redirect('/');
+  const fileId = +req.params.fileId;
+  log("HEEEEEEEEEEERE");
+
+  log(fileId);
+  const file = await db.deleteFile(fileId);
+  if (!file) return res.redirect('/');
+
+  log("HEEEEEEEEEEERE");
+  log(file);
+  res.redirect(`/folders/${file.folderId}`);
+}

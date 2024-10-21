@@ -1,7 +1,5 @@
 /* folderRouter.ts */
 import express from 'express';
-import { Request, Response } from 'express';
-import log from '../lib/logger';
 import * as controller from '../controllers/controller';
 
 const router = express.Router();

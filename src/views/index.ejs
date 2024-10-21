@@ -70,6 +70,11 @@
         <tr>
           <td><%= file.name %></td>
           <td><%= file.createdAt.toLocaleDateString() %></td>
+          <td>
+            <form action="/file/<%=file.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= file.name %>?')" >
+              <input type="submit" value="Delete">
+            </form>
+          </td>
         </tr>
       <% }) %>
     <% } %>

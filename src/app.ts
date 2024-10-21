@@ -5,6 +5,7 @@ import express from 'express';
 import path from 'path';
 import router from './routers/router';
 import folderRouter from './routers/folderRouter';
+import fileRouter from './routers/fileRouter';
 import log from './lib/logger';
 import session from 'express-session';
 import passport from 'passport';
@@ -45,6 +46,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use('/', router);
 app.use('/folders', folderRouter);
+app.use('/file', fileRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
