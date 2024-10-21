@@ -6,6 +6,7 @@ import upload from '../lib/upload';
 import fs from 'fs';
 import path from 'path'
 import { isIntegerString } from '../lib/utils';
+import { File } from '@prisma/client';
 
 export async function indexGet(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.render('home');
@@ -194,12 +195,11 @@ export async function fileDownload(req: Request, res: Response) {
   if (!isIntegerString(req.params.fileId)) return res.redirect('/');
   const fileId = +req.params.fileId;
 
-  const filePath = path.join('uploads', req.user.username, fileId.toString());
   const file = await db.getFile(fileId);
+  if (!file) return res.redirect('/');
 
-  if (!file || !fs.existsSync(filePath)) {
-    return res.redirect('/');
-  }
+  const filePath = await getOnDiskFilePath(file, req.user.username);
+  if (!filePath || !fs.existsSync(filePath)) return res.redirect('/');
 
   res.download(filePath, file.name);
 }
@@ -209,4 +209,12 @@ async function getOnDiskFolderPath(folderId: number, username: string): Promise<
   if (folderPathString === null) return null;
 
   return path.join('uploads', username, folderPathString);
+}
+
+async function getOnDiskFilePath(file: File, username: string): Promise<string | null> {
+  const folderPath = await getOnDiskFolderPath(file.folderId, username);
+  if (folderPath === null) return null;
+
+  const fileName = file.id + '_' + file.name;
+  return path.join(folderPath, fileName);
 }
