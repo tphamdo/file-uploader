@@ -3,7 +3,7 @@
 }
 
 #uploadErrorMessage {
-  animation: hideAnimation 0s 5s forwards;
+  animation: hideAnimation 0s 3s forwards;
 }
 
 @keyframes hideAnimation {

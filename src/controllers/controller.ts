@@ -12,14 +12,11 @@ export async function indexGet(req: Request, res: Response) {
 
   const rootFiles = await db.getRootFiles(req.user.id);
   const rootFolders = await db.getRootFolders(req.user.id);
-  const error = req.session.messages ? req.session.messages.at(-1) : null
-  req.session.messages = []; //reset session error messages
 
   res.render('index', {
     username: req.user?.username,
     files: rootFiles,
     folders: rootFolders,
-    error
   });
 }
 
@@ -73,10 +70,8 @@ export async function uploadPost(req: Request, res: Response) {
   upload.single('document')(req, res, async (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
-        req.session.messages = ["File size too large"];
-        req.session.save(() => {
-          return res.redirect(originalUrl);
-        })
+        req.flash('uploadError', 'File size too large');
+        return res.redirect(originalUrl);
       } else {
         return res.redirect(originalUrl);
       }
@@ -136,13 +131,10 @@ export async function folderGet(req: Request, res: Response) {
   const folderFiles = await db.getFolderFiles(folderId);
   const folderFolders = await db.getFolderFolders(folderId);
 
-  const error = req.session.messages ? req.session.messages.at(-1) : null
-  req.session.messages = []; //reset session error messages
   res.render('index', {
     username: req.user?.username,
     files: folderFiles,
     folders: folderFolders,
-    error,
     postPath: `/folders/${folderId}`,
   });
 }

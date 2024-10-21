@@ -13,8 +13,8 @@
     </h1>
     <a href="/logout">Logout</a>
     <hr />
-    <% if (locals.error) { %>
-      <p id="uploadErrorMessage"><%= error %></p>
+    <% if (locals.messages.uploadError) { %>
+      <p id="uploadErrorMessage"><%= messages.uploadError %></p>
     <% } %>
     <form action="<%= locals.postPath? postPath : '' %>/upload" method="post" enctype="multipart/form-data">
       <label for="document">Upload a file:</label>

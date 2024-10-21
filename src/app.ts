@@ -10,6 +10,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import prismaClient from './prisma/client';
+import flash from 'express-flash';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(
     },
   }),
 );
+app.use(flash());
 
 import './config/passport';
 app.use(passport.session());
