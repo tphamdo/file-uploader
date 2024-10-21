@@ -140,3 +140,24 @@ export async function getFolderPath(folderId: number): Promise<Folder[] | null> 
   if (!folderPath) return null;
   return [...folderPath, folder];
 }
+
+export async function deleteFile(fileId: number): Promise<File | null> {
+  const file = await prisma.file.delete({
+    where: {
+      id: fileId
+    },
+  });
+
+  return file;
+}
+
+export async function deleteFolder(folderId: number): Promise<Folder | null> {
+  const folder = await prisma.folder.delete({
+    where: {
+      id: folderId,
+      isRoot: false
+    },
+  });
+
+  return folder;
+}

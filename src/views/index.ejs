@@ -40,24 +40,33 @@
       <% }) %>
     <% } %>
   </div>
-  <div class="folders">
-    <hr />
-    <h4>Folders</h4>
+  <table class="files">
+    <tr>
+      <th>Name</th>
+      <th>Added</th>
+      <th>Delete</th>
+    </tr>
     <% if (locals.folders) { %>
       <% folders.map(folder => {%>
-        <a href="/folders/<%=folder.id%>"><p><%= folder.name %></p></a>
+        <tr>
+          <td><%= folder.name %></td>
+          <td><%= folder.name %></td>
+          <td>
+            <form action="/folders/<%=folder.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= folder.name %>?')" >
+              <input type="submit" value="Delete">
+            </form>
+          </td>
+        </tr>
       <% }) %>
     <% } %>
-  </div>
-  <div class="files">
-    <hr />
-    <h4>Files</h4>
     <% if (locals.files) { %>
       <% files.map(file => {%>
-        <p onclick="alert('File id is <%= file.id %>')"><%= file.name %></p>
+        <tr>
+          <td><%= file.name %></td>
+        </tr>
       <% }) %>
     <% } %>
-  </div>
+  </table>
 </body>
 
 </html>

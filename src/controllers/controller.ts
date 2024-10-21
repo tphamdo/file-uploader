@@ -41,12 +41,10 @@ export async function loginPost(req: Request, res: Response) {
       user?: Express.User | false | null,
       info?: object | string | Array<string | undefined>,
     ) => {
-      log(info);
       if (err || !user) {
         return res.redirect('/login');
       }
 
-      log(user);
       // temporary check --> move to use sessions
       req.login(user, () => {
         res.redirect('/');
@@ -63,7 +61,7 @@ export async function logoutGet(req: Request, res: Response) {
 
 
 export async function uploadPost(req: Request, res: Response) {
-  if (!req.isAuthenticated()) return res.render('home');
+  if (!req.isAuthenticated()) return res.redirect('/');
 
   let originalUrl = req.originalUrl.slice(0, -6); // remove '/upload'
 
@@ -107,7 +105,7 @@ export async function uploadPost(req: Request, res: Response) {
 }
 
 export async function folderPost(req: Request, res: Response) {
-  if (!req.isAuthenticated()) return res.render('home');
+  if (!req.isAuthenticated()) return res.redirect('/');
 
   let originalUrl = req.originalUrl.slice(0, -6); // remove '/folder'
 
@@ -129,7 +127,7 @@ export async function folderPost(req: Request, res: Response) {
 
 
 export async function folderGet(req: Request, res: Response) {
-  if (!req.isAuthenticated()) return res.render('home');
+  if (!req.isAuthenticated()) return res.redirect('/');
 
   if (!isIntegerString(req.params.folderId)) return res.redirect('/');
   const folderId = +req.params.folderId;
@@ -141,7 +139,6 @@ export async function folderGet(req: Request, res: Response) {
   const folderFiles = await db.getFolderFiles(folderId);
   const folderFolders = await db.getFolderFolders(folderId);
   const folderPath = await db.getFolderPath(folderId);
-  log("folderPath:", folderPath);
 
   res.render('index', {
     username: req.user?.username,
@@ -150,4 +147,17 @@ export async function folderGet(req: Request, res: Response) {
     postPath: `/folders/${folderId}`,
     folderPath,
   });
+}
+
+export async function folderDelete(req: Request, res: Response) {
+  if (!req.isAuthenticated()) return res.redirect('/');
+
+  if (!isIntegerString(req.params.folderId)) return res.redirect('/');
+  const folderId = +req.params.folderId;
+
+  const folder = await db.deleteFolder(folderId);
+  if (!folder) return res.redirect('/');
+
+  log(folder.parentFolderId);
+  res.redirect(`/folders/${folder.parentFolderId}`);
 }

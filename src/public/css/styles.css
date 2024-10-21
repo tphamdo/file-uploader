@@ -7,5 +7,23 @@
 }
 
 @keyframes hideAnimation {
-  to   { display: none; }
+  to {
+    display: none;
+  }
+}
+
+table.files th {
+  text-align: left;
+}
+
+table.files,
+table.files th,
+table.files td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+table.files th,
+table.files td {
+  padding: 5px;
 }
