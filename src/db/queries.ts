@@ -87,6 +87,16 @@ export async function getRootFolders(userId: number): Promise<Folder[] | null> {
   return getFolderFolders(rootFolderId);
 }
 
+export async function getFile(fileId: number): Promise<File | null> {
+  const file = await prisma.file.findUnique({
+    where: {
+      id: fileId
+    }
+  });
+
+  return file;
+}
+
 export async function getFolder(folderId: number): Promise<Folder | null> {
   const folder = await prisma.folder.findUnique({
     where: {

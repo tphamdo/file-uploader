@@ -163,19 +163,30 @@ export async function folderDelete(req: Request, res: Response) {
 }
 
 export async function fileDelete(req: Request, res: Response) {
-  log("HEEEEEEEEEEERE");
   if (!req.isAuthenticated()) return res.redirect('/');
 
-  log("HEEEEEEEEEEERE");
   if (!isIntegerString(req.params.fileId)) return res.redirect('/');
   const fileId = +req.params.fileId;
-  log("HEEEEEEEEEEERE");
 
-  log(fileId);
   const file = await db.deleteFile(fileId);
   if (!file) return res.redirect('/');
 
-  log("HEEEEEEEEEEERE");
   log(file);
   res.redirect(`/folders/${file.folderId}`);
+}
+
+export async function fileDownload(req: Request, res: Response) {
+  if (!req.isAuthenticated()) return res.redirect('/');
+
+  if (!isIntegerString(req.params.fileId)) return res.redirect('/');
+  const fileId = +req.params.fileId;
+
+  const filePath = path.join('uploads', req.user.username, fileId.toString());
+  const file = await db.getFile(fileId);
+
+  if (!file || !fs.existsSync(filePath)) {
+    return res.redirect('/');
+  }
+
+  res.download(filePath, file.name);
 }
