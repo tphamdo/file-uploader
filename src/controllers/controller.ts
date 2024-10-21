@@ -185,9 +185,10 @@ export async function fileDelete(req: Request, res: Response) {
 
   const file = await db.deleteFile(fileId);
   if (!file) return res.redirect('/');
+  const parentFolder = await db.getFolder(file.folderId);
+  if (!parentFolder) return res.redirect('/');
 
-  log(file);
-  res.redirect(`/folders/${file.folderId}`);
+  res.redirect(parentFolder.isRoot ? '/' : `/folders/${file.folderId}`);
 }
 
 export async function fileDownload(req: Request, res: Response) {
