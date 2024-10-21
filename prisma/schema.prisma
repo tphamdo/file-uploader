@@ -42,15 +42,19 @@ model Folder {
   owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId        Int
   name           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@map("folders")
 }
 
 model File {
-  id       Int    @id @default(autoincrement())
-  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
-  folderId Int
-  name     String
+  id        Int      @id @default(autoincrement())
+  folder    Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId  Int
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("files")
 }

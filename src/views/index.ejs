@@ -49,8 +49,14 @@
     <% if (locals.folders) { %>
       <% folders.map(folder => {%>
         <tr>
-          <td><%= folder.name %></td>
-          <td><%= folder.name %></td>
+          <td>
+            <a href="/folders/<%=folder.id%>">
+              <div style="height:100%;width:100%">
+                <%= folder.name %>/
+              </div>
+            </a>
+          </td>
+          <td><%= folder.createdAt.toLocaleDateString() %></td>
           <td>
             <form action="/folders/<%=folder.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= folder.name %>?')" >
               <input type="submit" value="Delete">
@@ -63,6 +69,7 @@
       <% files.map(file => {%>
         <tr>
           <td><%= file.name %></td>
+          <td><%= file.createdAt.toLocaleDateString() %></td>
         </tr>
       <% }) %>
     <% } %>
