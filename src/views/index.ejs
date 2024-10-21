@@ -36,7 +36,7 @@
         <% if (idx !==0 ) { %>
           <span>&gt;</span>
         <% } %>
-        <a href="<%= folder.isRoot? '/' : `/folders/${folder.id}` %>"><span><%= folder.name %></span></a>
+        <a href="<%= folder.isRoot? '/' : `/folder/${folder.id}` %>"><span><%= folder.name %></span></a>
       <% }) %>
     <% } %>
   </div>
@@ -51,7 +51,7 @@
       <% folders.map(folder => {%>
         <tr>
           <td>
-            <a href="/folders/<%=folder.id%>">
+            <a href="/folder/<%=folder.id%>">
               <div style="height:100%;width:100%">
                 <%= folder.name %>/
               </div>
@@ -59,8 +59,13 @@
           </td>
           <td><%= folder.createdAt.toLocaleDateString() %></td>
           <td>
-            <form action="/folders/<%=folder.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= folder.name %>?')" >
+            <form action="/folder/<%=folder.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= folder.name %>?')" >
               <input type="submit" value="Delete">
+            </form>
+          </td>
+          <td>
+            <form action="/folder/<%=folder.id%>/download" method="get">
+              <input type="submit" value="Download">
             </form>
           </td>
         </tr>

@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path'
 import { isIntegerString } from '../lib/utils';
 import { File } from '@prisma/client';
+import archiver from 'archiver';
 
 export async function indexGet(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.render('home');
@@ -202,6 +203,37 @@ export async function fileDownload(req: Request, res: Response) {
   if (!filePath || !fs.existsSync(filePath)) return res.redirect('/');
 
   res.download(filePath, file.name);
+}
+
+export async function folderDownload(req: Request, res: Response) {
+  if (!req.isAuthenticated()) return res.redirect('/');
+
+  if (!isIntegerString(req.params.folderId)) return res.redirect('/');
+  const folderId = +req.params.folderId;
+
+  const folder = await db.getFolder(folderId);
+  if (!folder) return res.redirect('/');
+
+  const folderPath = await getOnDiskFolderPath(folderId, req.user.username);
+  if (!folderPath || !fs.existsSync(folderPath)) return res.redirect('/');
+
+  const zipFileName = folder.name + '.zip';
+
+  res.attachment(zipFileName); // Set the response header for attachment
+  const archive = archiver('zip', {
+    zlib: { level: 9 } // Set the compression level
+  });
+
+  archive.on('error', () => {
+    res.redirect('/');
+  });
+
+  archive.pipe(res); // Pipe the archive data to the response
+
+  // Append files from the folder
+  archive.directory(folderPath, false); // The second argument is the prefix, set to false to not add folder name
+
+  archive.finalize(); // Finalize the archive (i.e., finish the archiving process)
 }
 
 async function getOnDiskFolderPath(folderId: number, username: string): Promise<string | null> {
