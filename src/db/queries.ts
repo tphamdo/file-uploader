@@ -1,6 +1,7 @@
 import prisma from '../prisma/client';
 import { genPassword } from '../lib/password';
 import { User, File, Folder } from '@prisma/client';
+import path from 'path';
 
 export async function addUser(
   username: string,
@@ -147,8 +148,24 @@ export async function getFolderPath(folderId: number): Promise<Folder[] | null> 
   if (folder.isRoot || !folder.parentFolderId) return [folder];
 
   const folderPath = await getFolderPath(folder.parentFolderId);
-  if (!folderPath) return null;
+  if (folderPath === null) return null;
   return [...folderPath, folder];
+}
+
+// the desired folder path on disk under uploads/<username>/ for folder with id folderId
+// ie for folder hierachy: 'photos/japan' the function should return photos/japan if folderId points to japan
+export async function getFolderPathString(folderId: number): Promise<string | null> {
+  const folder = await getFolder(folderId);
+  if (!folder) {
+    return null;
+  }
+  if (folder.isRoot || !folder.parentFolderId) return '';
+
+  const folderPathString = await getFolderPathString(folder.parentFolderId);
+  if (folderPathString === null) {
+    return null;
+  }
+  return path.join(folderPathString, folder.name);
 }
 
 export async function deleteFile(fileId: number): Promise<File | null> {

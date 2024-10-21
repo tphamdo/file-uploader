@@ -71,12 +71,12 @@ export async function uploadPost(req: Request, res: Response) {
         req.flash('uploadError', 'File size too large');
         return res.redirect(originalUrl);
       } else {
-        req.flash('uploadError', `Something went wrong`);
+        req.flash('uploadError', `Something went wrong 1`);
         return res.redirect(originalUrl);
       }
     } else {
       if (!req.file) {
-        req.flash('uploadError', `Something went wrong`);
+        req.flash('uploadError', `Something went wrong 2`);
         return res.redirect(originalUrl);
       }
 
@@ -84,18 +84,21 @@ export async function uploadPost(req: Request, res: Response) {
 
       if (!folderId) folderId = await db.getRootFolderId(req.user.id);
       if (!folderId) {
-        req.flash('uploadError', `Something went wrong`);
+        req.flash('uploadError', `Something went wrong 3`);
         return res.redirect(originalUrl);
       }
 
-      const file = await db.addFile(req.file.filename, folderId);
-      if (!file) {
-        req.flash('uploadError', `Something went wrong`);
+      const file = await db.addFile(req.file.originalname, folderId);
+      const folderPath = await getOnDiskFolderPath(folderId, req.user.username);
+      if (!file || !folderPath) {
+        req.flash('uploadError', `Something went wrong 4`);
         return res.redirect(originalUrl);
       }
 
-      // rename file to its id in the database
-      fs.rename(req.file.path, path.join(req.file.destination, file.id.toString()), (err) => {
+      // rename file
+      const newFileName = file.id.toString() + '_' + req.file.originalname;
+      const newFilePath = path.join(folderPath, newFileName)
+      fs.rename(req.file.path, newFilePath, (err) => {
         log(err);
       });
 
@@ -120,6 +123,16 @@ export async function folderPost(req: Request, res: Response) {
   if (!folder) {
     req.flash('folderError', `Something went wrong`);
     return res.redirect(originalUrl);
+  }
+
+  // create folder on disk under uploads/
+  const folderPath = await getOnDiskFolderPath(folder.id, req.user.username);
+  if (!folderPath) {
+    req.flash('folderError', `Something went wrong`);
+    return res.redirect(originalUrl);
+  }
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath, { recursive: true });
   }
 
   res.redirect(originalUrl);
@@ -189,4 +202,11 @@ export async function fileDownload(req: Request, res: Response) {
   }
 
   res.download(filePath, file.name);
+}
+
+async function getOnDiskFolderPath(folderId: number, username: string): Promise<string | null> {
+  const folderPathString = await db.getFolderPathString(folderId);
+  if (folderPathString === null) return null;
+
+  return path.join('uploads', username, folderPathString);
 }

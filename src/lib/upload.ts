@@ -6,10 +6,7 @@ import path from 'path';
 
 const storage = multer.diskStorage({
   destination: (req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-    log(req.user?.username);
-    log(req.user);
-    const dir = path.join('uploads', req.user ? req.user.username : '');
-    log(dir);
+    const dir = path.join('tmp');
 
     // Create uploads directory if it doesn't exist
     if (!fs.existsSync(dir)) {
