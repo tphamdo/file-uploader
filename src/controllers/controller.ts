@@ -185,6 +185,12 @@ export async function fileDelete(req: Request, res: Response) {
 
   const file = await db.deleteFile(fileId);
   if (!file) return res.redirect('/');
+
+  // delete file on disk too
+  const filePath = await getOnDiskFilePath(file, req.user.username);
+  if (!filePath) return res.redirect('/');
+  fs.unlink(filePath, err => console.error(err));
+
   const parentFolder = await db.getFolder(file.folderId);
   if (!parentFolder) return res.redirect('/');
 
