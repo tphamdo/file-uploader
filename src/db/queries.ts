@@ -155,14 +155,19 @@ export async function getFolderPath(folderId: number): Promise<Folder[] | null> 
 // the desired folder path on disk under uploads/<username>/ for folder with id folderId
 // ie for folder hierachy: 'photos/japan' the function should return photos/japan if folderId points to japan
 export async function getFolderPathString(folderId: number): Promise<string | null> {
+  console.log("gfps:", folderId);
+  console.log("gfps:", typeof (folderId));
   const folder = await getFolder(folderId);
   if (!folder) {
+    console.log("gfps: folder is null");
     return null;
   }
   if (folder.isRoot || !folder.parentFolderId) return '';
 
   const folderPathString = await getFolderPathString(folder.parentFolderId);
+  console.log("gfpstring:", folderPathString);
   if (folderPathString === null) {
+    console.log("gfps: null", folderId);
     return null;
   }
   return path.join(folderPathString, folder.name);

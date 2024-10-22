@@ -4,7 +4,7 @@ import log from '../lib/logger';
 import passport from 'passport';
 import upload from '../lib/upload';
 import fs from 'fs';
-import path from 'path'
+import path from 'path';
 import { isIntegerString } from '../lib/utils';
 import { File } from '@prisma/client';
 import archiver from 'archiver';
@@ -61,7 +61,6 @@ export async function logoutGet(req: Request, res: Response) {
   });
 }
 
-
 export async function uploadPost(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.redirect('/');
 
@@ -99,7 +98,7 @@ export async function uploadPost(req: Request, res: Response) {
 
       // rename file
       const newFileName = file.id.toString() + '_' + req.file.originalname;
-      const newFilePath = path.join(folderPath, newFileName)
+      const newFilePath = path.join(folderPath, newFileName);
       fs.rename(req.file.path, newFilePath, (err) => {
         log(err);
       });
@@ -140,7 +139,6 @@ export async function folderPost(req: Request, res: Response) {
   res.redirect(originalUrl);
 }
 
-
 export async function folderGet(req: Request, res: Response) {
   if (!req.isAuthenticated()) return res.redirect('/');
 
@@ -165,15 +163,23 @@ export async function folderGet(req: Request, res: Response) {
 }
 
 export async function folderDelete(req: Request, res: Response) {
+  log('trying folder delete');
   if (!req.isAuthenticated()) return res.redirect('/');
 
   if (!isIntegerString(req.params.folderId)) return res.redirect('/');
   const folderId = +req.params.folderId;
 
+  // delete folder on disk first
+  const folderPath = await getOnDiskFolderPath(folderId, req.user.username);
+  log('trying folder delete gave folerpath ->', folderPath);
+  if (!folderPath) return res.redirect('/');
+  fs.rm(folderPath, { recursive: true, force: true }, (err) =>
+    console.error(err),
+  );
+
   const folder = await db.deleteFolder(folderId);
   if (!folder) return res.redirect('/');
 
-  log(folder.parentFolderId);
   res.redirect(`/folder/${folder.parentFolderId}`);
 }
 
@@ -189,7 +195,7 @@ export async function fileDelete(req: Request, res: Response) {
   // delete file on disk too
   const filePath = await getOnDiskFilePath(file, req.user.username);
   if (!filePath) return res.redirect('/');
-  fs.unlink(filePath, err => console.error(err));
+  fs.unlink(filePath, (err) => console.error(err));
 
   const parentFolder = await db.getFolder(file.folderId);
   if (!parentFolder) return res.redirect('/');
@@ -228,7 +234,7 @@ export async function folderDownload(req: Request, res: Response) {
 
   res.attachment(zipFileName); // Set the response header for attachment
   const archive = archiver('zip', {
-    zlib: { level: 9 } // Set the compression level
+    zlib: { level: 9 }, // Set the compression level
   });
 
   archive.on('error', () => {
@@ -243,14 +249,20 @@ export async function folderDownload(req: Request, res: Response) {
   archive.finalize(); // Finalize the archive (i.e., finish the archiving process)
 }
 
-async function getOnDiskFolderPath(folderId: number, username: string): Promise<string | null> {
+async function getOnDiskFolderPath(
+  folderId: number,
+  username: string,
+): Promise<string | null> {
   const folderPathString = await db.getFolderPathString(folderId);
   if (folderPathString === null) return null;
 
   return path.join('uploads', username, folderPathString);
 }
 
-async function getOnDiskFilePath(file: File, username: string): Promise<string | null> {
+async function getOnDiskFilePath(
+  file: File,
+  username: string,
+): Promise<string | null> {
   const folderPath = await getOnDiskFolderPath(file.folderId, username);
   if (folderPath === null) return null;
 
