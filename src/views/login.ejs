@@ -6,15 +6,17 @@
   <link rel="stylesheet" type="text/css" href="/css/styles.css" />
 </head>
 <body>
-  <% if (locals.messages.loginError) { %>
-    <p class="flashErrorMessage"><%= messages.loginError %></p>
-  <% } %>
-  <form method="POST" action="/login">
-    <label for="username">Username: </label>
-    <input type="text" name="username">
-    <label for="password">Password: </label>
-    <input type="password" name="password">
-    <input type="submit" value="Login">
-  </form>
+  <div class="login-content">
+    <h1>Login</h1>
+    <% if (locals.messages.loginError) { %>
+      <p class="flashErrorMessage"><%= messages.loginError %></p>
+    <% } %>
+    <form method="POST" action="/login">
+      <input type="text" name="username" placeholder="username">
+      <input type="password" name="password" placeholder="password">
+      <input type="submit" value="Login">
+    </form>
+    <a id="register" href="/register">Register</a>
+  </div>
 </body>
 </html>

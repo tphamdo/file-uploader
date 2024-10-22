@@ -6,15 +6,17 @@
   <link rel="stylesheet" type="text/css" href="/css/styles.css" />
 </head>
 <body>
-  <% if (locals.messages.registerError) { %>
+  <div class="register-content">
+    <h1>Register</h1>
+    <% if (locals.messages.registerError) { %>
     <p class="flashErrorMessage"><%= messages.registerError %></p>
-  <% } %>
-  <form method="POST" action="/register">
-    <label for="username">Username: </label>
-    <input type="text" name="username">
-    <label for="password">Password: </label>
-    <input type="password" name="password">
-    <input type="submit" value="Register">
-  </form>
+    <% } %>
+    <form method="POST" action="/register">
+      <input type="text" name="username" placeholder="username">
+      <input type="password" name="password" placeholder="password">
+      <input type="submit" value="Register">
+    </form>
+    <a id="login" href="/login">Login</a>
+  </div>
 </body>
 </html>

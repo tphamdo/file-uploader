@@ -23,7 +23,8 @@ body {
   align-items: center;
 }
 
-.header, .content {
+.header,
+.content {
   max-width: 1200px;
 }
 
@@ -47,7 +48,7 @@ table.files {
   border-collapse: collapse;
   width: 100%;
   min-width: 600px;
-  border: 1px solid black;
+  border: 1px solid #ccc;
 }
 
 table.files th {
@@ -61,13 +62,13 @@ table.files tr {
 table.files,
 table.files th,
 table.files td {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #ccc;
   /* border-collapse: collapse; */
 }
 
 table.files th,
 table.files td {
-  padding: 5px;
+  padding: 8px;
   height: 40px;
 }
 
@@ -78,7 +79,8 @@ table.files td {
     height: 100%;
 
     & input {
-      width: 80px;
+      font-size: 1.2rem;
+      width: 110px;
       height: 100%;
     }
   }
@@ -89,7 +91,7 @@ table.files td:nth-child(3),
 table.files th:nth-child(4),
 table.files td:nth-child(4) {
   text-align: center;
-  width: 120px;
+  width: 140px;
 }
 
 table.files td.button {
@@ -263,4 +265,51 @@ a {
 a:hover {
   text-decoration: underline;
   color: inherit;
-  { recursive: true, force: true }, }
+}
+
+.home-content,
+.register-content,
+.login-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 10px;
+  box-shadow:
+    2px 3px 3px rgba(123, 123, 123, 0.3),
+    -1px -1px 3px rgba(123, 123, 123, 0.3);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  & .links {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+  }
+
+  & form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    & input {
+      border: 1px solid black;
+      font-size: 1.3rem;
+      padding: 6px;
+    }
+
+    & input[type="submit"] {
+      align-self: end;
+    }
+  }
+
+  #login,
+  #register {
+    font-size: 1rem;
+    align-self: start;
+  }
+}
