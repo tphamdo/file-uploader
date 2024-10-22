@@ -67,13 +67,13 @@ export async function uploadPost(req: Request, res: Response) {
 
   let originalUrl = req.originalUrl.slice(0, -6); // remove '/upload'
 
-  upload.single('document')(req, res, async (err) => {
+  upload.single('file')(req, res, async (err) => {
     if (err) {
       if (err.code === 'LIMIT_FILE_SIZE') {
         req.flash('uploadError', 'File size too large');
         return res.redirect(originalUrl);
       } else {
-        req.flash('uploadError', `Something went wrong 1`);
+        req.flash('uploadError', err.code);
         return res.redirect(originalUrl);
       }
     } else {
@@ -159,7 +159,7 @@ export async function folderGet(req: Request, res: Response) {
     username: req.user?.username,
     files: folderFiles,
     folders: folderFolders,
-    postPath: `/folders/${folderId}`,
+    postPath: `/folder/${folderId}`,
     folderPath,
   });
 }
@@ -174,7 +174,7 @@ export async function folderDelete(req: Request, res: Response) {
   if (!folder) return res.redirect('/');
 
   log(folder.parentFolderId);
-  res.redirect(`/folders/${folder.parentFolderId}`);
+  res.redirect(`/folder/${folder.parentFolderId}`);
 }
 
 export async function fileDelete(req: Request, res: Response) {
@@ -188,7 +188,7 @@ export async function fileDelete(req: Request, res: Response) {
   const parentFolder = await db.getFolder(file.folderId);
   if (!parentFolder) return res.redirect('/');
 
-  res.redirect(parentFolder.isRoot ? '/' : `/folders/${file.folderId}`);
+  res.redirect(parentFolder.isRoot ? '/' : `/folder/${file.folderId}`);
 }
 
 export async function fileDownload(req: Request, res: Response) {

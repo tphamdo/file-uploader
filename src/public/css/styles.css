@@ -8,8 +8,14 @@
   box-sizing: border-box;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
 body {
-  margin: 10px;
   font-family: 'Product Sans', Arial, sans-serif;
   font-size: 22px;
 }
@@ -24,20 +30,58 @@ body {
   }
 }
 
+table.files {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 600px;
+  border: 1px solid black;
+}
+
 table.files th {
+  text-align: left;
+}
+
+table.files tr {
   text-align: left;
 }
 
 table.files,
 table.files th,
 table.files td {
-  border: 1px solid black;
-  border-collapse: collapse;
+  border-bottom: 1px solid black;
+  /* border-collapse: collapse; */
 }
 
 table.files th,
 table.files td {
   padding: 5px;
+  height: 40px;
+}
+
+table.files td {
+  width: auto;
+
+  & form {
+    height: 100%;
+
+    & input {
+      width: 80px;
+      height: 100%;
+    }
+  }
+}
+
+table.files th:nth-child(3),
+table.files td:nth-child(3),
+table.files th:nth-child(4),
+table.files td:nth-child(4) {
+  text-align: center;
+  width: 120px;
+}
+
+table.files td.button {
+  text-align: center;
 }
 
 .file-upload input[type='file'] {
@@ -95,7 +139,8 @@ nav {
   font-size: 1rem;
 }
 
-.dropdown-content label, .dropdownItem {
+.dropdown-content label,
+.dropdownItem {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
@@ -103,7 +148,8 @@ nav {
   cursor: pointer;
 }
 
-.dropdown label:hover, .dropdownItem:hover {
+.dropdown label:hover,
+.dropdownItem:hover {
   background-color: #ddd;
 }
 
@@ -140,7 +186,7 @@ nav {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 16px;
 }
 
 .popup .close {
@@ -152,8 +198,11 @@ nav {
   color: #333;
 }
 
+.popup label {
+  align-self: start;
+}
+
 .popup #folderInput {
-  /* width: 80%; */
   width: 250px;
   padding: 10px;
   margin: 10px 0;
@@ -161,7 +210,7 @@ nav {
   border-radius: 4px;
 }
 
-.popup input[type="submit"] {
+.popup input[type='submit'] {
   background-color: white;
   /* color: #fff; */
   padding: 8px 12px;
@@ -173,6 +222,37 @@ nav {
   align-self: end;
 }
 
-.popup input[type="submit"] {
+.popup input[type='submit'] {
   background-color: #ddd;
+}
+
+.content {
+  padding: 20px;
+}
+
+.filesInfo {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.folderPath {
+  font-size: 1.5rem;
+}
+
+input[type='submit'] {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: inherit;
 }

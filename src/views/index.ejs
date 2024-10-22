@@ -8,11 +8,13 @@
 </head>
 
 <body>
-  <% if (locals.username) { %>
-    <h1>Hi <%= username %>
-    </h1>
+  <div class="header">
+    <% if (locals.username) { %>
+      <h1>Hi <%= username %></h1>
+    <% } %>
     <a href="/logout">Logout</a>
-    <hr />
+  </div>
+  <div class="content">
     <% if (locals.messages.uploadError) { %>
       <p class="flashErrorMessage"><%= messages.uploadError %></p>
     <% } %>
@@ -24,86 +26,86 @@
         <span class="close" id="closePopup">&times;</span>
         <form action="<%= locals.postPath? postPath : '' %>/folder" method="post">
           <div class="popup-content">
+            <label for="folderName">New Folder</label>
             <input type="text" placeholder="Folder Name" name="folderName" id="folderInput" required>
-            <!-- <input type="submit" value="Submit"> -->
             <input type="submit" onclick="submitForm()" value="Create">
           </div>
         </form>
       </div>
     </div>
-    <div class="dropdown">
-      <button onclick="myFunction()" class="dropbtn"><span class="plus">+</span> New</button>
-      <div id="myDropdown" class="dropdown-content">
-        <div>
+    <div class="filesInfo">
+      <div class="dropdown">
+        <button onclick="myFunction()" class="dropbtn"><span class="plus">+</span> New</button>
+        <div id="myDropdown" class="dropdown-content">
           <form class="file-upload" action="<%= locals.postPath? postPath : '' %>/upload" method="post" enctype="multipart/form-data">
             <label for="file" class="custom-file-upload">Upload File</label>
             <input type="file" class="dropdownItem" id="file" name="file" onchange="form.submit()"/>
           </form>
+          <div class="dropdownItem" onclick="openPopup();">New Folder</div>
         </div>
-        <div class="dropdownItem" onclick="openPopup();">New Folder</div>
       </div>
+      <% if (locals.folderPath) { %>
+        <div class="folderPath">
+          <% folderPath.map((folder, idx) => { %>
+            <% if (idx !==0 ) { %>
+              <span>&gt;</span>
+            <% } %>
+            <a href="<%= folder.isRoot? '/' : `/folder/${folder.id}` %>"><span><%= folder.name %></span></a>
+          <% }) %>
+        </div>
+      <% } %>
     </div>
-  <% } %>
-  <div class="folderPath">
-    <% if (locals.folderPath) { %>
-      <% folderPath.map((folder, idx) => { %>
-        <% if (idx !==0 ) { %>
-          <span>&gt;</span>
-        <% } %>
-        <a href="<%= folder.isRoot? '/' : `/folder/${folder.id}` %>"><span><%= folder.name %></span></a>
-      <% }) %>
-    <% } %>
+    <table class="files">
+      <tr>
+        <th>Name</th>
+        <th>Added</th>
+        <th>Delete</th>
+        <th>Download</th>
+      </tr>
+      <% if (locals.folders) { %>
+        <% folders.map(folder => {%>
+          <tr>
+            <td>
+              <a href="/folder/<%=folder.id%>">
+                <div style="height:100%;width:100%">
+                  <%= folder.name %>/
+                </div>
+              </a>
+            </td>
+            <td><%= folder.createdAt.toLocaleDateString() %></td>
+            <td class="button">
+              <form action="/folder/<%=folder.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= folder.name %>?')" style="height: 100%;">
+                <input type="submit" value="Delete">
+              </form>
+            </td>
+            <td class="button">
+              <form action="/folder/<%=folder.id%>/download" method="get" style="height: 100%;">
+                <input type="submit" value="Download">
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+      <% if (locals.files) { %>
+        <% files.map(file => {%>
+          <tr>
+            <td><%= file.name %></td>
+            <td><%= file.createdAt.toLocaleDateString() %></td>
+            <td class="button">
+              <form action="/file/<%=file.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= file.name %>?')">
+                <input type="submit" value="Delete">
+              </form>
+            </td>
+            <td class="button">
+              <form action="/file/<%=file.id%>/download" method="get">
+                <input type="submit" value="Download">
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+    </table>
   </div>
-  <table class="files">
-    <tr>
-      <th>Name</th>
-      <th>Added</th>
-      <th>Delete</th>
-      <th>Download</th>
-    </tr>
-    <% if (locals.folders) { %>
-      <% folders.map(folder => {%>
-        <tr>
-          <td>
-            <a href="/folder/<%=folder.id%>">
-              <div style="height:100%;width:100%">
-                <%= folder.name %>/
-              </div>
-            </a>
-          </td>
-          <td><%= folder.createdAt.toLocaleDateString() %></td>
-          <td>
-            <form action="/folder/<%=folder.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= folder.name %>?')" >
-              <input type="submit" value="Delete">
-            </form>
-          </td>
-          <td>
-            <form action="/folder/<%=folder.id%>/download" method="get">
-              <input type="submit" value="Download">
-            </form>
-          </td>
-        </tr>
-      <% }) %>
-    <% } %>
-    <% if (locals.files) { %>
-      <% files.map(file => {%>
-        <tr>
-          <td><%= file.name %></td>
-          <td><%= file.createdAt.toLocaleDateString() %></td>
-          <td>
-            <form action="/file/<%=file.id%>/delete" method="post" onsubmit="return confirm('Are you sure you want to delete <%= file.name %>?')" >
-              <input type="submit" value="Delete">
-            </form>
-          </td>
-          <td>
-            <form action="/file/<%=file.id%>/download" method="get">
-              <input type="submit" value="Download">
-            </form>
-          </td>
-        </tr>
-      <% }) %>
-    <% } %>
-  </table>
 </body>
 
 <script>
@@ -130,7 +132,7 @@ window.onclick = function(event) {
 const popupOverlay = document.getElementById('popupOverlay');
 const popup = document.getElementById('popup');
 const closePopup = document.getElementById('closePopup');
-const folderInput = document.getElementById('folderName');
+const folderInput = document.getElementById('folderInput');
 
 function openPopup() {
   popupOverlay.style.display = 'block';
