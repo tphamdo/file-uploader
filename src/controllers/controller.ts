@@ -120,6 +120,12 @@ export async function folderPost(req: Request, res: Response) {
     return res.redirect(originalUrl);
   }
 
+  const folderAlreadyExists = await db.folderNameAlreadyExists(folderId, req.body.folderName);
+  if (folderAlreadyExists) {
+    req.flash('folderError', `${req.body.folderName}/ already exists`);
+    return res.redirect(originalUrl);
+  }
+
   const folder = await db.addFolder(req.body.folderName, folderId, req.user.id);
   if (!folder) {
     req.flash('folderError', `Something went wrong`);
